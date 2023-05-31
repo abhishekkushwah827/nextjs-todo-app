@@ -10,21 +10,30 @@ interface Todo {
 }
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    return JSON.parse(localStorage.getItem("todos")) || []
-  });
-  const [inputVal, setInputVal] = useState<String>("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+  // const [todos, setTodos] = useState<Todo[]>(() => {   //getting error :ReferenceError: localStorage is not defined
+  //   return JSON.parse(localStorage.getItem("todos")) || []
+  // });
+  const [inputVal, setInputVal] = useState<any>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editTodoId, setEditTodoId] = useState<number>();
 
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    if (localStorage) {
+      let localdata = JSON.parse(localStorage.getItem("todos") || '[]');
+      setTodos(localdata)
+    }
+  }, []);
+  
+  useEffect(() => {
+     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
 
   const handleAddEdit = (): void => {
-    if(!inputVal) return;
+    console.log(todos)
+    if (!inputVal) return;
     let updatedTodos = todos;
     if (isEdit) {
       let index = updatedTodos.findIndex(todo => todo.id == editTodoId);
@@ -77,7 +86,7 @@ export default function Home() {
 
       <div className="mt-8 mb-32 grid text-center w-full lg:w-1/2 lg:mb-0 lg:text-left">
 
-        {todos.map((todo) => {
+        {(todos && todos.length>0) && todos.map((todo) => {
           return (
             <div key={todo.id}
               className="group flex justify-between rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30">
@@ -86,7 +95,6 @@ export default function Home() {
                 markAsDone={(id: number) => markAsDone(id)}
                 deleteTodo={(id: number) => deleteTodo(id)}
                 editHandler={(todo: Todo) => editHandler(todo)}
-                isEdit={isEdit}
               />
             </div>
           )

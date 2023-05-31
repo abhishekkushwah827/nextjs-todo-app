@@ -1,6 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-function Todo({ todo, markAsDone, deleteTodo, editHandler, isEdit }) {
+
+function Todo({ todo, markAsDone, deleteTodo, editHandler }:any) {
     return (
         <>
             <div className='flex gap-2'>
